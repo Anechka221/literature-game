@@ -1,224 +1,117 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Книжная полка</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;font-family:Georgia,serif}
-    body{background:#d8c5a1;display:flex;justify-content:center;padding:20px}
-    .container{max-width:1200px;width:100%;background:rgba(218,195,155,0.3);border-radius:48px;padding:24px}
-    .header{display:flex;justify-content:space-between;margin-bottom:20px}
-    .stats{background:#c9b086;padding:8px 24px;border-radius:60px;display:flex;gap:30px}
-    .books{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:rgba(160,120,80,0.15);border-radius:12px;border-bottom:4px solid #8a6a44;min-height:120px}
-    .book{flex:0 1 auto;min-width:100px;max-width:200px;padding:12px;background:linear-gradient(145deg,#f0e4ce,#dccdb2);border:1px solid #b5956a;border-radius:12px;text-align:center;cursor:pointer;box-shadow:0 4px 0 #b5956a;transition:all 0.2s}
-    .book.done{background:#6b3f2a;border-color:#2d1a0a;color:#f0e0c8;cursor:default;box-shadow:0 4px 0 #2d1a0a;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:.8rem;padding:8px 4px;min-width:40px;max-width:60px;height:110px}
-    .book .author{font-size:.7rem;text-transform:uppercase;color:#4c351b}
-    .book.done .author{color:#f0e0c8}
-    .book .title{font-size:1rem;font-weight:600}
-    .book .counter{background:#b39162;color:#fff;padding:0 12px;border-radius:40px;display:inline-block;margin-top:6px}
-    .chars-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px;position:relative}
-    .char{background:#f2ead9;border:1px solid #cbaf84;border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;font-size:.9rem;word-break:break-word;transition:all 0.2s}
-    .char.selected{background:#d9f0b0;border:3px solid #6a9e3a}
-    .char.hidden{display:none}
-    .char.shake{animation:charShake 0.5s}
-    @keyframes charShake{0%{transform:translateX(0)}20%{transform:translateX(-15px)}40%{transform:translateX(15px)}60%{transform:translateX(-10px)}80%{transform:translateX(10px)}100%{transform:translateX(0)}}
-    .error-flash{animation:flashRed 0.6s}
-    @keyframes flashRed{0%{background:#e8dac2}30%{background:#ff2222;border-color:#a00;box-shadow:0 0 40px #ff0000}100%{background:#e8dac2}}
-    .final{display:none;margin-top:20px;text-align:center;border-top:2px solid #b5956a;padding-top:20px}
-    .final.show{display:block}
-    .final h2{font-size:3rem;color:#7a2e2e}
-  </style>
+<html>
+<head><meta charset="UTF-8"><title>Книжная полка</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Georgia,serif}
+body{background:#d8c5a1;display:flex;justify-content:center;padding:20px}
+.container{max-width:1200px;width:100%;background:rgba(218,195,155,0.3);border-radius:48px;padding:24px}
+.header{display:flex;justify-content:space-between;margin-bottom:20px}
+.stats{background:#c9b086;padding:8px 24px;border-radius:60px;display:flex;gap:30px}
+.books{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:rgba(160,120,80,0.15);border-radius:12px;border-bottom:4px solid #8a6a44;min-height:120px}
+.book{flex:0 1 auto;min-width:100px;max-width:200px;padding:12px;background:linear-gradient(145deg,#f0e4ce,#dccdb2);border:1px solid #b5956a;border-radius:12px;text-align:center;cursor:pointer;box-shadow:0 4px 0 #b5956a;transition:all 0.2s}
+.book.done{background:#6b3f2a;border-color:#2d1a0a;color:#f0e0c8;cursor:default;box-shadow:0 4px 0 #2d1a0a;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:.8rem;padding:8px 4px;min-width:40px;max-width:60px;height:110px}
+.book .author{font-size:.7rem;text-transform:uppercase;color:#4c351b}
+.book.done .author{color:#f0e0c8}
+.book .title{font-size:1rem;font-weight:600}
+.book .counter{background:#b39162;color:#fff;padding:0 12px;border-radius:40px;display:inline-block;margin-top:6px}
+.chars-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px}
+.char{background:#f2ead9;border:1px solid #cbaf84;border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;font-size:.9rem;word-break:break-word;transition:all 0.2s}
+.char.selected{background:#d9f0b0;border:3px solid #6a9e3a}
+.char.hidden{display:none}
+.error-flash{animation:flashRed 0.6s}
+@keyframes flashRed{0%{background:#e8dac2}30%{background:#ff2222;border-color:#a00;box-shadow:0 0 30px #ff0000}100%{background:#e8dac2}}
+.shake{animation:charShake 0.5s}
+@keyframes charShake{0%{transform:translateX(0)}20%{transform:translateX(-15px)}40%{transform:translateX(15px)}60%{transform:translateX(-10px)}80%{transform:translateX(10px)}100%{transform:translateX(0)}}
+.final{display:none;margin-top:20px;text-align:center;border-top:2px solid #b5956a;padding-top:20px}
+.final.show{display:block}
+.final h2{font-size:3rem;color:#7a2e2e}
+</style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <h1>📚 Книжная полка</h1>
-    <div class="stats"><span>⏱ <span id="timer">0</span>с</span><span>❌ <span id="errors">0</span></span></div>
-  </div>
+  <div class="header"><h1>📚 Книжная полка</h1><div class="stats"><span>⏱ <span id="timer">0</span>с</span><span>❌ <span id="errors">0</span></span></div></div>
   <div id="books" class="books"></div>
   <div id="chars" class="chars-grid"></div>
-  <div class="chars-grid" style="margin-top:8px;text-align:center;font-size:.9rem;color:#5a4028">📄 осталось: <span id="remain">0</span></div>
-  <div id="final" class="final">
-    <h2>🏆 Поздравляю!</h2>
-    <p>⏱ <span id="finalTime">0</span> сек &nbsp;·&nbsp; ❌ <span id="finalErrors">0</span> ошибок</p>
-  </div>
+  <div style="text-align:center;margin-top:8px;font-size:.9rem;color:#5a4028">📄 осталось: <span id="remain">0</span></div>
+  <div id="final" class="final"><h2>🏆 Поздравляю!</h2><p>⏱ <span id="finalTime">0</span> сек &nbsp;·&nbsp; ❌ <span id="finalErrors">0</span> ошибок</p></div>
 </div>
 <script>
-var rawData = [
-  {author:"Д. И. Фонвизин",title:"Недоросль",chars:["Митрофанушка Простаков","госпожа Простакова","Тарас Скотинин","Стародум","Софья","Цыфиркин","Кутейкин","Вральман","Правдин","Милон"]},
-  {author:"А. С. Грибоедов",title:"Горе от ума",chars:["Павел Афанасьевич Фамусов","Александр Андреевич Чацкий","Алексей Степанович Молчалин","Сергей Сергеевич Скалозуб","Софья Фамусова","Лизанька","Платон Михайлович Горич","князь и княгиня Тугоуховские","Репетилов","Хлёстова"]},
-  {author:"А. С. Пушкин",title:"Евгений Онегин",chars:["Евгений Онегин","Владимир Ленский","Татьяна Ларина","Ольга Ларина","Прасковья Ларина","Автор","князь N","няня Филипьевна","Зарецкий","княжна Алина"]},
-  {author:"А. С. Пушкин",title:"Капитанская дочка",chars:["Пётр Гринёв","Савельич","Алексей Швабрин","Емельян Пугачёв","Екатерина II","Маша Миронова","Иван Кузьмич Миронов","Василиса Егоровна","Андрей Карлович Р.","Зурин"]},
-  {author:"М. Ю. Лермонтов",title:"Герой нашего времени",chars:["Григорий Александрович Печорин","Максим Максимыч","Бэла","Грушницкий","Вернер","Вулич","Казбич","Вера","Азамат","Мери Лиговская"]},
-  {author:"Н. В. Гоголь",title:"Ревизор",chars:["Иван Александрович Хлестаков","Осип","Антон Антонович Сквозник-Дмухановский","Аммос Фёдорович Ляпкин-Тяпкин","Артемий Филиппович Земляника","Лука Лукич Хлопов","Христиан Иванович Гибнер","Бобчинский и Добчинский","Марья Антоновна","Анна Андреевна"]},
-  {author:"Н. В. Гоголь",title:"Мёртвые души",chars:["Павел Иванович Чичиков","Манилов","Фемистоклюс","Алкид","Настасья Петровна Коробочка","Ноздрёв","Михаил Семёнович Собакевич","Степан Плюшкин","Селифан","капитан Копейкин"]},
-  {author:"И. С. Тургенев",title:"Отцы и дети",chars:["Евгений Базаров","Аркадий Кирсанов","Павел Петрович Кирсанов","Николай Петрович Кирсанов","Фенечка","Анна Сергеевна Одинцова","Катя Локтева","Евдоксия Кукшина","Виктор Ситников","княгиня Р."]},
-  {author:"И. А. Гончаров",title:"Обломов",chars:["Илья Ильич Обломов","Захар","Андрей Иванович Штольц","Ольга Ильинская","Агафья Матвеевна Пшеницына","Мухояров","Тарантьев","Судьбинский","барон фон Лангваген","Анисья"]},
-  {author:"Л. Н. Толстой",title:"Война и мир",chars:["Андрей Болконский","Пьер Безухов","Наташа Ростова","Анна Павловна Шерер","Марья Дмитриевна Ахросимова","Василий Денисов","Анатоль Курагин","Элен Курагина","Платон Каратаев","капитан Тушин"]}
+const data = [
+{author:"Д.И.Фонвизин",title:"Недоросль",chars:["Митрофанушка Простаков","госпожа Простакова","Тарас Скотинин","Стародум","Софья","Цыфиркин","Кутейкин","Вральман","Правдин","Милон"]},
+{author:"А.С.Грибоедов",title:"Горе от ума",chars:["Павел Афанасьевич Фамусов","Александр Андреевич Чацкий","Алексей Степанович Молчалин","Сергей Сергеевич Скалозуб","Софья Фамусова","Лизанька","Платон Михайлович Горич","князь и княгиня Тугоуховские","Репетилов","Хлёстова"]},
+{author:"А.С.Пушкин",title:"Евгений Онегин",chars:["Евгений Онегин","Владимир Ленский","Татьяна Ларина","Ольга Ларина","Прасковья Ларина","Автор","князь N","няня Филипьевна","Зарецкий","княжна Алина"]},
+{author:"А.С.Пушкин",title:"Капитанская дочка",chars:["Пётр Гринёв","Савельич","Алексей Швабрин","Емельян Пугачёв","Екатерина II","Маша Миронова","Иван Кузьмич Миронов","Василиса Егоровна","Андрей Карлович Р.","Зурин"]},
+{author:"М.Ю.Лермонтов",title:"Герой нашего времени",chars:["Григорий Александрович Печорин","Максим Максимыч","Бэла","Грушницкий","Вернер","Вулич","Казбич","Вера","Азамат","Мери Лиговская"]},
+{author:"Н.В.Гоголь",title:"Ревизор",chars:["Иван Александрович Хлестаков","Осип","Антон Антонович Сквозник-Дмухановский","Аммос Фёдорович Ляпкин-Тяпкин","Артемий Филиппович Земляника","Лука Лукич Хлопов","Христиан Иванович Гибнер","Бобчинский и Добчинский","Марья Антоновна","Анна Андреевна"]},
+{author:"Н.В.Гоголь",title:"Мёртвые души",chars:["Павел Иванович Чичиков","Манилов","Фемистоклюс","Алкид","Настасья Петровна Коробочка","Ноздрёв","Михаил Семёнович Собакевич","Степан Плюшкин","Селифан","капитан Копейкин"]},
+{author:"И.С.Тургенев",title:"Отцы и дети",chars:["Евгений Базаров","Аркадий Кирсанов","Павел Петрович Кирсанов","Николай Петрович Кирсанов","Фенечка","Анна Сергеевна Одинцова","Катя Локтева","Евдоксия Кукшина","Виктор Ситников","княгиня Р."]},
+{author:"И.А.Гончаров",title:"Обломов",chars:["Илья Ильич Обломов","Захар","Андрей Иванович Штольц","Ольга Ильинская","Агафья Матвеевна Пшеницына","Мухояров","Тарантьев","Судьбинский","барон фон Лангваген","Анисья"]},
+{author:"Л.Н.Толстой",title:"Война и мир",chars:["Андрей Болконский","Пьер Безухов","Наташа Ростова","Анна Павловна Шерер","Марья Дмитриевна Ахросимова","Василий Денисов","Анатоль Курагин","Элен Курагина","Платон Каратаев","капитан Тушин"]}
 ];
-var colors = ["#b22222","#2e8b57","#d2691e","#1e6fa0","#8b4513","#6a5acd","#b8860b","#cd5c5c","#2f4f4f","#8b008b"];
-var books = [], pool = [], selected = null, errors = 0, sec = 0, timer = null, started = false, finished = false;
-var bDiv = document.getElementById('books'), cDiv = document.getElementById('chars'), remainSpan = document.getElementById('remain');
-var timerD = document.getElementById('timer'), errD = document.getElementById('errors');
-var finalDiv = document.getElementById('final'), finalTime = document.getElementById('finalTime'), finalErrors = document.getElementById('finalErrors');
+const colors = ["#b22222","#2e8b57","#d2691e","#1e6fa0","#8b4513","#6a5acd","#b8860b","#cd5c5c","#2f4f4f","#8b008b"];
+let books=[], pool=[], selected=null, errors=0, sec=0, timer=null, started=false, finished=false;
+const bDiv=document.getElementById('books'), cDiv=document.getElementById('chars'), remain=document.getElementById('remain');
+const timerD=document.getElementById('timer'), errD=document.getElementById('errors');
+const finalDiv=document.getElementById('final'), finalTime=document.getElementById('finalTime'), finalErrors=document.getElementById('finalErrors');
 
-function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}}
-
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 function init(){
- if(timer){clearInterval(timer);timer=null;}
- started=false; sec=0; errors=0; selected=null; finished=false;
+ if(timer) clearInterval(timer);
+ timer=null; started=false; sec=0; errors=0; selected=null; finished=false;
  finalDiv.className='final';
  timerD.textContent='0'; errD.textContent='0';
- books = rawData.map(function(item,idx){
-  return {
-    author:item.author,
-    title:item.title,
-    chars:item.chars.slice(),
-    collected:0,
-    completed:false,
-    bookIndex:idx,
-    color:colors[idx]
-  };
- });
- pool = [];
- for(var i=0;i<books.length;i++){
-  var b=books[i];
-  for(var j=0;j<b.chars.length;j++){
-   pool.push({id:'c'+Math.random().toString(36).substr(2,6), bookIndex:i, name:b.chars[j], placed:false});
-  }
- }
+ books=data.map((item,idx)=>({author:item.author,title:item.title,chars:item.chars.slice(),collected:0,completed:false,bookIndex:idx,color:colors[idx]}));
+ pool=[];
+ books.forEach((b,i)=>b.chars.forEach(n=>pool.push({id:'c'+Math.random().toString(36).substr(2,6),bookIndex:i,name:n,placed:false})));
  shuffle(pool);
  render();
 }
-
 function render(){
- bDiv.innerHTML = '';
- for(var i=0;i<books.length;i++){
-  var b=books[i];
-  var card = document.createElement('div');
-  card.className = 'book';
+ bDiv.innerHTML='';
+ books.forEach((b,i)=>{
+  const card=document.createElement('div');
+  card.className='book';
   if(b.completed){
-   card.className += ' done';
-   card.style.background = 'linear-gradient(180deg,'+b.color+','+adjust(b.color,-30)+')';
-   card.innerHTML = '<span class="author">'+b.author+'</span><span class="title">'+b.title+'</span>';
-   card.style.writingMode = 'vertical-rl';
-   card.style.textOrientation = 'mixed';
-   card.style.transform = 'rotate(180deg)';
-   card.style.fontSize = '0.8rem';
-   card.style.minWidth = '40px';
-   card.style.maxWidth = '60px';
-   card.style.height = '110px';
-   card.style.padding = '8px 4px';
-   card.style.color = '#f0e0c8';
-   card.style.cursor = 'default';
+   card.className+=' done';
+   card.style.background=linear-gradient(180deg,${b.color},${adjust(b.color,-30)});
+   card.innerHTML=<span class="author">${b.author}</span><span class="title">${b.title}</span>;
+   card.style.writingMode='vertical-rl'; card.style.textOrientation='mixed'; card.style.transform='rotate(180deg)';
+   card.style.fontSize='0.8rem'; card.style.minWidth='40px'; card.style.maxWidth='60px'; card.style.height='110px';
+   card.style.padding='8px 4px'; card.style.color='#f0e0c8'; card.style.cursor='default';
   } else {
-   card.innerHTML = '<div class="author">'+b.author+'</div><div class="title">'+b.title+'</div><span class="counter">'+b.collected+'/10</span>';
-   card.dataset.bookIndex = i;
-   card.addEventListener('click', function(e){ onBook(e, parseInt(this.dataset.bookIndex)); });
+   card.innerHTML=<div class="author">${b.author}</div><div class="title">${b.title}</div><span class="counter">${b.collected}/10</span>;
+   card.dataset.bookIndex=i;
+   card.addEventListener('click',function(e){onBook(e,parseInt(this.dataset.bookIndex));});
   }
   bDiv.appendChild(card);
- }
- var visible = pool.filter(function(c){return !c.placed;});
- remainSpan.textContent = visible.length;
- cDiv.innerHTML = '';
- for
-✦✦✦✦✦✦✦✦✦✦✦
-
-(var k=0;k<visible.length;k++){
-  var ch = visible[k];
-  var el = document.createElement('div');
-  el.className = 'char';
-  if(selected === ch.id) el.className += ' selected';
-  el.textContent = ch.name;
-  el.dataset.charId = ch.id;
-  el.addEventListener('click', function(e){ onChar(this.dataset.charId); });
+ });
+ const visible=pool.filter(c=>!c.placed);
+ remain.textContent=visible.length;
+ cDiv.innerHTML='';
+ visible.forEach(ch=>{
+  const el=document.createElement('div');
+  el.className='char';
+  if(selected===ch.id) el.className+=' selected';
+  el.textContent=ch.name;
+  el.dataset.charId=ch.id;
+  el.addEventListener('click',function(){onChar(this.dataset.charId);});
   cDiv.appendChild(el);
- }
+ });
 }
+function adjust(hex,amt){let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); r=Math.max(0,Math.min(255,r+amt)); g=Math.max(0,Math.min(255,g+amt)); b=Math.max(0,Math.min(255,b+amt)); return '#'+[r,g,b].map(x=>('0'+x.toString(16)).slice(-2)).jo
 
-function adjust(hex,amt){
- var r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
- r=Math.max(0,Math.min(255,r+amt));
- g=Math.max(0,Math.min(255,g+amt));
- b=Math.max(0,Math.min(255,b+amt));
- return '#' + ('0'+r.toString(16)).slice(-2) + ('0'+g.toString(16)).slice(-2) + ('0'+b.toString(16)).slice(-2);
-}
 
-function onChar(id){
- if(finished) return;
- var ch = pool.find(function(c){return c.id===id;});
- if(!ch || ch.placed) return;
- if(!started){ started=true; timer=setInterval(function(){ sec++; timerD.textContent=sec; },1000); }
- if(selected !== null){
-  var prev = document.querySelector('.char[data-char-id="'+selected+'"]');
-  if(prev) prev.className = 'char';
- }
- selected = id;
- var el = document.querySelector('.char[data-char-id="'+id+'"]');
- if(el) el.className = 'char selected';
-}
-
-function onBook(e, bookIdx){
- if(finished) return;
- var book = books[bookIdx];
- if(book.completed || selected === null) return;
- var ch = pool.find(function(c){return c.id===selected;});
- if(!ch || ch.placed){ clearSel(); render(); return; }
- if(ch.bookIndex === bookIdx){
-  ch.placed = true;
-  book.collected++;
-  if(book.collected === 10) book.completed = true;
-  clearSel();
-  render();
-  var allDone = books.every(function(b){return b.completed;});
-  if(allDone) finish();
- } else {
-  errors++;
-  errD.textContent = errors;
-  // Красная вспышка на книге
-  var bookEl = e.currentTarget;
-  bookEl.classList.add('error-flash');
-  setTimeout(function(){ bookEl.classList.remove('error-flash'); }, 600);
-  // Тряска карточки персонажа
-  var charEl = document.querySelector('.char[data-char-id="'+selected+'"]');
-  if(charEl) {
-    charEl.classList.add('shake');
-    setTimeout(function(){ charEl.classList.remove('shake'); }, 500);
-  }
-  clearSel();
-  render();
- }
-}
-
-function clearSel(){
- if(selected !== null){
-  var prev = document.querySelector('.char[data-char-id="'+selected+'"]');
-  if(prev) prev.className = 'char';
-  selected = null;
- }
-}
-
-function finish(){
- finished = true;
- if(timer) clearInterval(timer);
- finalTime.textContent = sec;
- finalErrors.textContent = errors;
- document.getElementById('chars').style.display = 'none';
- document.querySelector('.chars-grid:last-of-type').style.display = 'none';
- finalDiv.className = 'final show';
-}
-
-document.querySelector('h1').addEventListener('dblclick', function(){ init(); });
+in('');}
+function onChar(id){if(finished)return;const ch=pool.find(c=>c.id===id);if(!ch||ch.placed)return;if(!started){started=true;timer=setInterval(()=>{sec++;timerD.textContent=sec;},1000);}if(selected!==null){const prev=document.querySelector('.char[data-char-id="'+selected+'"]');if(prev)prev.className='char';}selected=id;const el=document.querySelector('.char[data-char-id="'+id+'"]');if(el)el.className='char selected';}
+function onBook(e,bookIdx){if(finished)return;const book=books[bookIdx];if(book.completedch.placed){clearSel();render();return;}if(ch.bookIndex===bookIdx){ch.placed=true;book.collected++;if(book.collected===10)book.completed=true;clearSel();render();if(books.every(b=>b.completed))finish();}else{errors++;errD.textContent=errors;e.currentTarget.classList.add('error-flash');setTimeout(()=>e.currentTarget.classList.remove('error-flash'),600);const charEl=document.querySelector('.char[data-char-id="'+selected+'"]');if(charEl){charEl.classList.add('shake');setTimeout(()=>charEl.classList.remove('shake'),500);}clearSel();render();}}
+function clearSel(){if(selected!==null){const prev=document.querySelector('.char[data-char-id="'+selected+'"]');if(prev)prev.className='char';selected=null;}}
+function finish(){finished=true;if(timer)clearInterval(timer);finalTime.textContent=sec;finalErrors.textContent=errors;document.getElementById('chars').style.display='none';document.querySelector('.chars-grid:last-of-type').style.display='none';finalDiv.className='final show';}
+document.querySelector('h1').addEventListener('dblclick',init);
 init();
-document.addEventListener('click', function(e){
- if(!e.target.closest('.char') && !e.target.closest('.book') && selected !== null){
-  clearSel();
-  render();
- }
-});
+document.addEventListener('click',function(e){if(!e.target.closest('.char')&&!e.target.closest('.book')&&selected!==null){clearSel();render();}});
 </script>
 </body>
 </html>
+
 
 
