@@ -11,26 +11,23 @@
     .header{display:flex;justify-content:space-between;margin-bottom:20px}
     .stats{background:#c9b086;padding:8px 24px;border-radius:60px;display:flex;gap:30px}
     .books{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:rgba(160,120,80,0.15);border-radius:12px;border-bottom:4px solid #8a6a44;min-height:120px}
-    .book{flex:0 1 auto;min-width:100px;max-width:200px;padding:12px;background:linear-gradient(145deg,#f0e4ce,#dccdb2);border:1px solid #b5956a;border-radius:12px;text-align:center;cursor:pointer;box-shadow:0 4px 0 #b5956a;transition:all 0.3s}
+    .book{flex:0 1 auto;min-width:100px;max-width:200px;padding:12px;background:linear-gradient(145deg,#f0e4ce,#dccdb2);border:1px solid #b5956a;border-radius:12px;text-align:center;cursor:pointer;box-shadow:0 4px 0 #b5956a;transition:all 0.2s}
     .book.done{background:#6b3f2a;border-color:#2d1a0a;color:#f0e0c8;cursor:default;box-shadow:0 4px 0 #2d1a0a;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:.8rem;padding:8px 4px;min-width:40px;max-width:60px;height:110px}
     .book .author{font-size:.7rem;text-transform:uppercase;color:#4c351b}
     .book.done .author{color:#f0e0c8}
     .book .title{font-size:1rem;font-weight:600}
     .book .counter{background:#b39162;color:#fff;padding:0 12px;border-radius:40px;display:inline-block;margin-top:6px}
     .chars-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px;position:relative}
-    .char{background:#f2ead9;border:1px solid #cbaf84;border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;font-size:.9rem;word-break:break-word;transition:all 0.2s;position:relative}
+    .char{background:#f2ead9;border:1px solid #cbaf84;border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;font-size:.9rem;word-break:break-word;transition:all 0.2s}
     .char.selected{background:#d9f0b0;border:3px solid #6a9e3a}
     .char.hidden{display:none}
-    .char.shake{animation:charShake 0.4s}
-    @keyframes charShake{0%{transform:translateX(0)}20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}100%{transform:translateX(0)}}
+    .char.shake{animation:charShake 0.5s}
+    @keyframes charShake{0%{transform:translateX(0)}20%{transform:translateX(-15px)}40%{transform:translateX(15px)}60%{transform:translateX(-10px)}80%{transform:translateX(10px)}100%{transform:translateX(0)}}
     .error-flash{animation:flashRed 0.6s}
-    @keyframes flashRed{0%{background:#e8dac2}30%{background:#ff3333;border-color:#a00;box-shadow:0 0 40px #ff0000}100%{background:#e8dac2}}
+    @keyframes flashRed{0%{background:#e8dac2}30%{background:#ff2222;border-color:#a00;box-shadow:0 0 40px #ff0000}100%{background:#e8dac2}}
     .final{display:none;margin-top:20px;text-align:center;border-top:2px solid #b5956a;padding-top:20px}
     .final.show{display:block}
     .final h2{font-size:3rem;color:#7a2e2e}
-    /* ——— Обрывки карточки ——— */
-    .piece{position:fixed;pointer-events:none;z-index:999;background:#f2ead9;border:1px solid #cbaf84;border-radius:4px;padding:8px 4px;font-size:.9rem;text-align:center;word-break:break-word;box-shadow:0 4px 12px rgba(0,0,0,0.3);opacity:1;transition:all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);}
-    .piece.fly{opacity:0;transform:translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.3);}
   </style>
 </head>
 <body>
@@ -107,9 +104,7 @@ function render(){
    card.innerHTML = '<span class="author">'+b.author+'</span><span class="title">'+b.title+'</span>';
    card.style.writingMode = 'vertical-rl';
    card.style.textOrientation = 'mixed';
-✦✦✦✦✦✦✦✦✦✦✦
-
-card.style.transform = 'rotate(180deg)';
+   card.style.transform = 'rotate(180deg)';
    card.style.fontSize = '0.8rem';
    card.style.minWidth = '40px';
    card.style.maxWidth = '60px';
@@ -127,7 +122,10 @@ card.style.transform = 'rotate(180deg)';
  var visible = pool.filter(function(c){return !c.placed;});
  remainSpan.textContent = visible.length;
  cDiv.innerHTML = '';
- for(var k=0;k<visible.length;k++){
+ for
+✦✦✦✦✦✦✦✦✦✦✦
+
+(var k=0;k<visible.length;k++){
   var ch = visible[k];
   var el = document.createElement('div');
   el.className = 'char';
@@ -145,55 +143,6 @@ function adjust(hex,amt){
  g=Math.max(0,Math.min(255,g+amt));
  b=Math.max(0,Math.min(255,b+amt));
  return '#' + ('0'+r.toString(16)).slice(-2) + ('0'+g.toString(16)).slice(-2) + ('0'+b.toString(16)).slice(-2);
-}
-
-// ——— Рвущаяся карточка ———
-function ripCard(element) {
-  var rect = element.getBoundingClientRect();
-  var text = element.textContent;
-  var pieces = [];
-  var colors = ['#f2ead9','#f8f0df','#e8dcc8','#f5ede0'];
-  for (var i = 0; i < 4; i++) {
-    var piece = document.createElement('div');
-    piece.className = 'piece';
-    piece.textContent = text;
-    piece.style.left = rect.left + 'px';
-    piece.style.top = rect.top + 'px';
-    piece.style.width = rect.width/2 + 'px';
-    piece.style.height = rect.height/2 + 'px';
-    piece.style.background = colors[i % colors.length];
-    piece.style.borderColor = '#cbaf84';
-    piece.style.fontSize = window.getComputedStyle(element).fontSize;
-    piece.style.lineHeight = window.getComputedStyle(element).lineHeight;
-    piece.style.overflow = 'hidden';
-    // обрезаем текст для каждого куска (для эффекта)
-    piece.style.display = 'flex';
-    piece.style.alignItems = 'center';
-    piece.style.justifyContent = 'center';
-    document.body.appendChild(piece);
-    pieces.push(piece);
-  }
-  // Через 50 мс запускаем разлёт
-  requestAnimationFrame(function() {
-    pieces.forEach(function(p, idx) {
-      var angle = idx * Math.PI/2 + Math.random() * 0.5;
-      var dist = 60 + Math.random() * 80;
-      var tx = Math.cos(angle) * dist;
-      var ty = Math.sin(angle) * dist;
-      var rot = (Math.random() - 0.5) * 60;
-      p.style.setProperty('--tx', tx + 'px');
-      p.style.setProperty('--ty', ty + 'px');
-      p.style.setProperty('--rot', rot + 'deg');
-      p.classList.add('fly');
-    });
-  });
-  // Через 0.8 сек убираем обрывки
-  setTimeout(function() {
-    pieces.forEach(function(p) { p.remove(); });
-  }, 800);
-  // Тряска карточки
-  element.classList.add('shake');
-  setTimeout(function() { element.classList.remove('shake'); }, 400);
 }
 
 function onChar(id){
@@ -231,16 +180,11 @@ function onBook(e, bookIdx){
   var bookEl = e.currentTarget;
   bookEl.classList.add('error-flash');
   setTimeout(function(){ bookEl.classList.remove('error-flash'); }, 600);
-  
-  // Рвём карточку персонажа
+  // Тряска карточки персонажа
   var charEl = document.querySelector('.char[data-char-id="'+selected+'"]');
   if(charEl) {
-    ripCard(charEl);
-    // Скрываем карточку на время анимации (чтобы не мелькала)
-    charEl.style.visibility = 'hidden';
-    setTimeout(function() {
-      charEl.style.visibility = 'visible';
-    }, 800);
+    charEl.classList.add('shake');
+    setTimeout(function(){ charEl.classList.remove('shake'); }, 500);
   }
   clearSel();
   render();
