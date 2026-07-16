@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Книжная полка</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;user-select:none;font-family:'Georgia','Times New Roman',serif}
+    body{min-height:100vh;background:#d8c5a1;display:flex;justify-content:center;padding:16px;background-image:radial-gradient(ellipse at 20% 30%,rgba(200,170,130,0.3)0%,transparent 50%),repeating-linear-gradient(45deg,rgba(180,150,110,0.05)0px,rgba(180,150,110,0.05)2px,transparent 2px,transparent 8px)}
+    .game-container{max-width:1300px;width:100%;background:rgba(218,195,155,0.3);border-radius:48px;padding:24px;box-shadow:0 20px 40px rgba(80,50,20,0.4);position:relative;overflow:hidden}
+    .header-stats{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:24px}
+    .title-area h1{font-size:1.7rem;color:#3e2e1a;border-left:4px solid #7a5f3a;padding-left:18px}
+    .title-area small{display:block;font-size:.9rem;color:#4f3b23}
+    .stats{background:#c9b086;padding:8px 24px;border-radius:60px;display:flex;gap:32px;font-size:1.2rem}
+
+    .books-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:130px;padding:12px 8px;background:rgba(160,120,80,0.15);border-radius:12px;border-bottom:4px solid #8a6a44;align-items:flex-end}
+    .book-card{flex:0 1 auto;min-width:30px;max-width:70px;height:110px;border-radius:2px 6px 6px 2px;padding:4px 6px;background:#6b3f2a;cursor:pointer;transition:all 0.4s ease;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:.75rem;font-weight:700;color:#f0e0c8;text-shadow:0 1px 2px rgba(0,0,0,0.5);border:1px solid #2d1a0a;box-shadow:-2px 0 0 #2d1a0a,-4px 0 8px rgba(0,0,0,0.2);letter-spacing:2px;text-align:center;word-break:keep-all}
+    .book-card:not(.completed){min-width:110px;max-width:200px;height:auto;writing-mode:horizontal-tb;transform:none;border-radius:16px 16px 10px 10px;padding:12px 14px;background:linear-gradient(145deg,#f0e4ce,#dccdb2);border:1px solid #b5956a;color:#2d1c0a;text-shadow:none;box-shadow:0 6px 0 #b5956a,0 8px 12px rgba(0,0,0,0.1);letter-spacing:normal;font-weight:400;flex-direction:column;justify-content:center;text-align:center}
+    .book-card:not(.completed) .author{font-size:.7rem;text-transform:uppercase;color:#4c351b;opacity:.8;letter-spacing:.5px}
+    .book-card:not(.completed) .title{font-size:1rem;font-weight:600;color:#2d1c0a;word-break:break-word;white-space:normal}
+    .book-card:not(.completed) .counter{font-size:.8rem;background:#b39162;color:#fff;padding:2px 14px;border-radius:40px;margin-top:6px}
+    .book-card.completed{min-width:38px;max-width:70px;height:120px;padding:6px 4px;cursor:default;opacity:.95;white-space:normal;line-height:1.15;font-size:0.65rem;word-break:break-word}
+
+    .pile-wrapper{position:relative;min-height:260px;padding:20px;margin-top:8px;background:rgba(120,80,40,0.06);border-radius:30px;border:2px dashed #b5956a}
+    .pile-container{position:relative;width:100%;height:240px}
+    .char-card{position:absolute;padding:10px 14px;background:linear-gradient(160deg,#f8f0df,#e4d7bf);border-radius:10px;border:2px solid #cbaf84;cursor:pointer;word-break:break-word;line-height:1.3;font-size:clamp(0.9rem, 1.4vw, 1.2rem);display:flex;align-items:center;justify-content:center;min-height:50px;box-shadow:0 4px 12px rgba(0,0,0,0.12);transition:transform 0.1s ease, box-shadow 0.1s ease;text-align:center;font-weight:500;color:#2d1d0b;touch-action:manipulation;will-change:transform}
+    .char-card:hover{transform:scale(1.04) !important;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+    .char-card.selected{background:#d9f0b0;border:3px solid #6a9e3a;z-index:1000;transform:scale(1.08);box-shadow:0 0 0 4px rgba(170,220,80,0.3)}
+    .char-card.placed{display:none}
+    .char-card.wrong{animation:shake .4s}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
+    .pile-counter{font-size:.9rem;color:#5a4028;margin-top:14px;text-align:center;background:rgba(200,180,150,0.5);padding:4px 20px;border-radius:40px;font-weight:500;display:inline-block;position:relative;left:50%;transform:translateX(-50%)}
+
+    .error-flash{animation:flashRed .4s}
+    @keyframes flashRed{30%{background:#d95b5b}}
+
+    .final-wrapper{display:none;margin-top:20px;padding-top:16px;border-top:2px solid #b5956a;text-align:center;position:relative}
+    .final-wrapper.show{display:block}
+    .final-title{font-size:3rem;font-weight:700;color:#7a2e2e;text-shadow:0 2px 8px rgba(180,60,60,0.3);letter-spacing:2px;margin-bottom:4px}
+    .final-stats{font-size:.95rem;color:#4f3b23;margin-top:4px}
+    .final-stats span{font-weight:700;color:#2d1c0a}
+
+    .firework{position:absolute;width:6px;height:6px;border-radius:50%;animation:boom 1.2s ease-out forwards;pointer-events:none;z-index:999}
+    @keyframes boom{
+      0%{transform:translate(0,0) scale(0.2);opacity:1}
+      100%{transform:translate(var(--tx), var(--ty)) scale(0);opacity:0}
+    }
+
+    .victory-overlay{display:none !important}
+
+    @media(max-width:600px){.game-container{padding:12px}.book-card:not(.completed){min-width:90px;max-width:160px}.book-card:not(.completed) .title{font-size:.85rem}.book-card.completed{min-width:30px;max-width:55px;height:100px;font-size:.55rem}.char-card{font-size:clamp(0.8rem, 1.8vw, 1rem);padding:8px 10px;min-height:44px}.pile-wrapper{min-height:200px;padding:12px}.pile-container{height:180px}.stats{font-size:.9rem;gap:16px;padding:6px 16px}.title-area h1{font-size:1.2rem}.final-title{font-size:2.2rem}}
+  </style>
+</head>
+<body>
+<div class="game-container">
+  <div class="header-stats">
+    <div class="title-area"><h1>📚 Книжная полка</h1><small>кликни карточку → кликни книгу</small></div>
+    <div class="stats"><span>⏱ <span id="timerDisplay">0</span>с</span><span>❌ <span id="errorsDisplay">0</span></span></div>
+  </div>
+  <div id="booksRow" class="books-row"></div>
+  <div id="pileWrapper" class="pile-wrapper">
+    <div id="pileContainer" class="pile-container"></div>
+    <div class="pile-counter">📄 осталось: <span id="remainCount">0</span></div>
+  </div>
+
+  <div id="finalWrapper" class="final-wrapper">
+    <div class="final-title">🏆 Поздравляю!</div>
+    <div class="final-stats">
+      ⏱ <span id="finalTime">0</span> сек &nbsp;·&nbsp; ❌ <span id="finalErrors">0</span> ошибок
+    </div>
+  </div>
+</div>
+
+<div id="victoryOverlay" style="display:none"></div>
+
+<script>
+(function(){
+  const rawData = [
+    { author: "Д. И. Фонвизин", title: "Недоросль", chars: ["Митрофанушка Простаков","госпожа Простакова","Тарас Скотинин","Стародум","Софья","Цыфиркин","Кутейкин","Вральман","Правдин","Милон"] },
+    { author: "А. С. Грибоедов", title: "Горе\nот ума", chars: ["Павел Афанасьевич Фамусов","Александр Андреевич Чацкий","Алексей Степанович Молчалин","Сергей Сергеевич Скалозуб","Софья Фамусова","Лизанька","Платон Михайлович Горич","князь и княгиня Тугоуховские","Репетилов","Хлёстова"] },
+    { author: "А. С. Пушкин", title: "Евгений Онегин", chars: ["Евгений Онегин","Владимир Ленский","Татьяна Ларина","Ольга Ларина","Прасковья Ларина","Автор","князь N","няня Филипьевна","Зарецкий","княжна Алина"] },
+    { author: "А. С. Пушкин", title: "Капитанская дочка", chars: ["Пётр Гринёв","Савельич","Алексей Швабрин","Емельян Пугачёв","Екатерина II","Маша Миронова","Иван Кузьмич Миронов","Василиса Егоровна","Андрей Карлович Р.","Зурин"] },
+    { author: "М. Ю. Лермонтов", title: "Герой нашего времени", chars: ["Григорий Александрович Печорин","Максим Максимыч","Бэла","Грушницкий","Вернер","Вулич","Казбич","Вера","Азамат","Мери Лиговская"] },
+    { author: "Н. В. Гоголь", title: "Ревизор", chars: ["Иван Александрович Хлестаков","Осип","Антон Антонович Сквозник-Дмухановский","Аммос Фёдорович Ляпкин-Тяпкин","Артемий Филиппович Земляника","Лука Лукич Хлопов","Христиан Иванович Гибнер","Бобчинский и Добчинский","Марья Антоновна","Анна Андреевна"] },
+    { author: "Н. В. Гоголь", title: "Мёртвые души", chars: ["Павел Иванович Чичиков","Манилов","Фемистоклюс","Алкид","Настасья Петровна Коробочка","Ноздрёв","Михаил Семёнович Собакевич","Степан Плюшкин","Селифан","капитан Копейкин"] },
+    { author: "И. С. Тургенев", title: "Отцы\nи дети", chars: ["Евгений Базаров","Аркадий Кирсанов","Павел Петрович Кирсанов","Николай Петрович Кирсанов","Фенечка","Анна Сергеевна Одинцова","Катя Локтева","Евдоксия Кукшина","Виктор Ситников","княгиня Р."] },
+    { author: "И. А. Гончаров", title: "Обломов", chars: ["Илья Ильич Обломов","Захар","Андрей Иванович Штольц","Ольга Ильинская","Агафья Матвеевна Пшеницына","Мухояров","Тарантьев","Судьбинский","барон фон Лангваген","Анисья"] },
+    { author: "Л. Н. Толстой", title: "Война\nи мир", chars: ["Андрей Болконский","Пьер Безухов","Наташа Ростова","Анна Павловна Шерер","Марья Дмитриевна Ахросимова","Василий Денисов","Анатоль Курагин","Элен Курагина","Платон Каратаев","капитан Тушин"] }
+  ];
+
+  const colors = ["#b22222","#2e8b57","#d2691e","#1e6fa0","#8b4513","#6a5acd","#b8860b","#cd5c5c","#2f4f4f","#8b008b"];
+  let books = [], pool = [], selectedId = null, errors = 0, sec = 0, timer = null, started = false, finished = false;
+  const booksRow = document.getElementById('booksRow'), pileContainer = document.getElementById('pileContainer'), remainSpan = document.getElementById('remainCount');
+  const timerD = document.getElementById('timerDisplay'), errD = document.getElementById('errorsDisplay');
+  const finalWrapper = document.getElementById('finalWrapper');
+  const finalTime = document.getElementById('finalTime'), finalErrors = document.getElementById('finalErrors');
+
+  function init(){
+    if(timer) clearInterval(timer); timer = null; started = false; sec = 0; errors = 0; selectedId = null; finished = false;
+    finalWrapper.classList.remove('show');
+    document.getElementById('pileWrapper').style.display = 'block';
+    timerD.textContent = '0'; errD.textContent = '0';
+    books = rawData.map((item, idx) => ({ ...item, chars: [...item.chars], collected: 0, completed: false, bookIndex: idx, color: colors[idx] }));
+    pool = []; books.forEach((b,i) => b.chars.forEach(n => pool.push({ id: 'c'+Math.random().toString(36).substr(2,6), bookIndex: i, name: n, placed: false })));
+    shuffle(pool);
+    render();
+  }
+
+  function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
+
+  function render(){
+    booksRow.innerHTML = '';
+    books.forEach((b,i) => {
+      let c = document.createElement('div'); c.className = 'book-card';
+      if(b.completed){ 
+        c.classList.add('completed'); 
+        c.style.background = `linear-gradient(180deg,${b.color},${adjustColor(b.color,-30)})`; 
+        c.style.borderColor = '#1f1105'; 
+        const titleParts = b.title.split('\n');
+        c.innerHTML = titleParts.join('<br>');
+        c.style.color = '#fff4e0'; 
+        c.style.textAlign = 'center';
+      }
+      else { 
+        c.style.background = 'linear-gradient(145deg,#f0e4ce,#dccdb2)'; 
+        const titleOneLine = b.title.replace(/\n/g, ' ');
+        c.innerHTML = `<div class="author">${b.author}</div><div class="title">${titleOneLine}</div><span class="counter">${b.collected}/10</span>`; 
+        c.dataset.bookIndex = i; 
+        c.addEventListener('click', (e) => onBookClick(e, i)); 
+      }
+      booksRow.appendChild(c);
+    });
+
+    const visible = pool.filter(c => !c.placed);
+    remainSpan.textContent = visible.length;
+    pileContainer.innerHTML = '';
+    if(visible.length === 0 && !finished) return;
+
+    visible.forEach((ch) => {
+      let el = document.createElement('div');
+      el.className = 'char-card';
+      if(selectedId === ch.id) el.classList.add('selected');
+      el.textContent = ch.name;
+      el.dataset.charId = ch.id;
+      el.addEventListener('click', (e) => { e.stopPropagation(); onCharClick(ch.id); });
+
+      const x = 5 + Math.random() * 75;
+      const y = 5 + Math.random() * 70;
+      const rot = (Math.random() - 0.5) * 14;
+      const scale = 0.85 + Math.random() * 0.25;
+      const zIndex = Math.floor(Math.random() * 100) + 1;
+
+      el.style.left = x + '%';
+      el.style.top = y + '%';
+      el.style.transform = `rotate(${rot}deg) scale(${scale})`;
+      el.style.zIndex = zIndex;
+      const w = 55 + Math.random() * 40;
+      el.style.width = w + '%';
+      el.style.maxWidth = '300px';
+
+      pileContainer.appendChild(el);
+    });
+  }
+
+  function adjustColor(hex,a){ let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16); r=Math.max(0,Math.min(255,r+a)); g=Math.max(0,Math.min(255,g+a)); b=Math.max(0,Math.min(255,b+a)); return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+
+  function onCharClick(id){
+    if(finished) return;
+    let ch = pool.find(c => c.id === id);
+    if(!ch || ch.placed) return;
+    if(!started){ started = true; timer = setInterval(()=>{ sec++; timerD.textContent = sec; },1000); }
+    if(selectedId !== null){ let p = document.querySelector(`.char-card[data-char-id="${selectedId}"]`); if(p) p.classList.remove('selected'); }
+    selectedId = id;
+    let el = document.querySelector(`.char-card[data-char-id="${id}"]`);
+    if(el) el.classList.add('selected');
+  }
+
+  function onBookClick(e, bookIdx){
+    if(finished) return;
+    let book = books[bookIdx];
+    if(book.completed || selectedId === null) return;
+    let ch = pool.find(c => c.id === selectedId);
+    if(!ch || ch.placed){ clearSel(); render(); return; }
+    if(ch.bookIndex === bookIdx){
+      ch.placed = true; book.collected++;
+      if(book.collected === 10) book.completed = true;
+      clearSel(); render();
+      if(books.every(b => b.completed)) finish();
+    } else {
+      errors++; errD.textContent = errors;
+      e.currentTarget.classList.add('error-flash');
+      let el = document.querySelector(`.char-card[data-char-id="${selectedId}"]`);
+      if(el){ el.classList.add('wrong'); setTimeout(()=>el.classList.remove('wrong'),400); }
+      setTimeout(()=>e.currentTarget.classList.remove('error-flash'),500);
+      clearSel(); render();
+    }
+  }
+
+  function clearSel(){ if(selectedId !== null){ let p = document.querySelector(`.char-card[data-char-id="${selectedId}"]`); if(p) p.classList.remove('selected'); selectedId = null; } }
+
+  function fireFirework(container) {
+    const colorsFire = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6fb7', '#ff9f43', '#a29bfe', '#fd79a8'];
+    for(let burst = 0; burst < 3; burst++) {
+      setTimeout(() => {
+        const cx = 20 + Math.random() * 60;
+        const cy = 10 + Math.random() * 40;
+        const count = 30 + Math.floor(Math.random() * 30);
+        for(let i = 0; i < count; i++) {
+          const el = document.createElement('div');
+          el.className = 'firework';
+          const angle = Math.random() * 2 * Math.PI;
+          const dist = 80 + Math.random() * 180;
+          const tx = Math.cos(angle) * dist;
+          const ty = Math.sin(angle) * dist;
+          el.style.setProperty('--tx', tx + 'px');
+          el.style.setProperty('--ty', ty + 'px');
+          el.style.left = cx + '%';
+          el.style.top = cy + '%';
+          el.style.background = colorsFire[Math.floor(Math.random() * colorsFire.length)];
+          el.style.width = (4 + Math.random() * 6) + 'px';
+          el.style.height = el.style.width;
+          el.style.animationDuration = (0.8 + Math.random() * 0.6) + 's';
+          container.appendChild(el);
+          setTimeout(() => el.remove(), 1500);
+        }
+      }, burst * 400);
+    }
+  }
+
+  function finish(){
+    finished = true;
+    if(timer) clearInterval(timer);
+    finalTime.textContent = sec;
+    finalErrors.textContent = errors;
+    document.getElementById('pileWrapper').style.display = 'none';
+    finalWrapper.classList.add('show');
+
+    const container = document.querySelector('.game-container');
+    fireFirework(container);
+    setTimeout(() => fireFirework(container), 800);
+    setTimeout(() => fireFirework(container), 1600);
+    setTimeout(() => fireFirework(container), 2400);
+  }
+
+  document.querySelector('.title-area h1').addEventListener('dblclick', function(){
+    init();
+  });
+
+  const smallHint = document.querySelector('.title-area small');
+  smallHint.textContent = 'кликни карточку → кликни книгу · дважды кликни по заголовку для рестарта';
+
+  init();
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.char-card') && !e.target.closest('.book-card') && selectedId !== null){
+      clearSel(); render();
+    }
+  });
+
+  window.addEventListener('resize', () => { if(!finished) render(); });
+})();
+</script>
+</body>
+</html>
