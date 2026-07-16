@@ -108,7 +108,7 @@ function clearSel(){if(selected!==null){const prev=document.querySelector('.char
 function finish(){finished=true;if(timer)clearInterval(timer);finalTime.textContent=sec;finalErrors.textContent=errors;document.getElementById('chars').style.display='none';document.querySelector('.chars-grid:last-of-type').style.display='none';finalDiv.className='final show';}
 document.querySelector('h1').addEventListener('dblclick',init);
 init();
-document.addEventListener('click',function(e){if(!e.target.closest('.char')&&!e.target.closest('.book')&&selected!null){clearSel();render();}});
+document.addEventListener('click',function(e){if(!e.target.closest('.char')&&!e.target.closest('.book')&&selected!==null){clearSel();render();}});
 </script>
 </body>
 </html>
